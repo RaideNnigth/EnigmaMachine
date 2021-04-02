@@ -1,0 +1,94 @@
+// creating the keyboard layout for the enigma machine
+const letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
+const rotor1 = "jgdqoxuscamifrvtpnewkblzyh".split("");
+const rotor2 = "ntzpsfbokmwrcjdivlaeyuxhgq".split("");
+const rotor3 = "jviubhtcdyakeqzposgxnrmwfl".split("");
+var positionRotor1 = 0;
+var positionRotor2 = 0;
+var positionRotor3 = 0;
+function createLayoutHtml(){
+	for (i = 0; i < letters.length; i++){
+		var button = document.createElement("button");
+		button.innerHTML = letters[i];
+		button.setAttribute("id", letters[i])
+		button.setAttribute("class", "Key");
+		if (i < 11){
+			var div = document.getElementById("divButtonsTop");
+			div.appendChild(button);
+		} else if (i > 10 && i < 20){
+			var div = document.getElementById("divButtonsMid");
+			div.appendChild(button);
+		} else {
+			var div = document.getElementById("divButtonsBot");
+			div.appendChild(button);
+		}
+	}
+}
+function clearButton(){
+	var inputText = document.getElementById("Input");
+	var outputText = document.getElementById("Output");
+	inputText.innerHTML= "Input";
+	outputText.innerHTML= "Output";
+}
+function keyPressed(key){
+	for (i = 0; i < letters.length; i++){
+		if (key.key == letters[i]){
+			var button = document.getElementById(enigmaKeyResponse(i));
+			var inputText = document.getElementById("Input");
+			var outputText = document.getElementById("Output");
+			var pastTextInput = inputText.innerHTML;
+			var pastTextOutput = outputText.innerHTML;
+			if (inputText.innerHTML != "Input"){
+				if (inputText.innerHTML.length < 26){
+					button.style.background="#696969";
+					inputText.innerHTML = pastTextInput + letters[i];
+					outputText.innerHTML = pastTextOutput + enigmaKeyResponse(i);
+					setTimeout(function(){ button.style.background="#A9A9A9"; }, 300);
+				}else{
+					button.style.background="#696969";
+					inputText.innerHTML = pastTextInput;
+					outputText.innerHTML = pastTextOutput;
+					setTimeout(function(){ button.style.background="#A9A9A9"; }, 300);
+				}
+			}else{
+				var pastTextInput = " ";
+				var pastTextOutput = " ";
+				button.style.background="#696969";
+				inputText.innerHTML = pastTextInput + letters[i];
+				outputText.innerHTML = pastTextOutput + enigmaKeyResponse(i);
+				setTimeout(function(){ button.style.background="#A9A9A9"; }, 300);
+			}
+        }
+	}
+}
+function enigmaKeyResponse(num){
+	var fNum = 0;
+	if (num + positionRotor1 < 26 && positionRotor1 != 0){
+		fNum = letters.indexOf(rotor1[num + positionRotor1]);
+	}else if (positionRotor1 != 0){
+		fNum = letters.indexOf(rotor1[(num + positionRotor1) - 26]);
+	}
+	if (fNum + positionRotor2 < 26 && positionRotor2 != 0){
+		fNum = letters.indexOf(rotor2[fNum + positionRotor2]);
+	}else if (positionRotor2 != 0){
+		fNum = letters.indexOf(rotor2[num + positionRotor2]);
+	}
+	if (fNum + positionRotor3 < 26 && positionRotor3 !=0){
+		fNum = letters.indexOf(rotor3[fNum + positionRotor3]);
+	}
+	else if (positionRotor3 != 0){
+		fNum = letters.indexOf(rotor3[num + positionRotor3]);
+	}
+	if (fNum != 0){
+		return rotor3[fNum];
+	}else{
+		return rotor3[letters.indexOf(rotor2[letters.indexOf(rotor1[num])])];
+	}
+}
+function routersCheck(value1, value2, value3){
+	positionRotor1 = parseInt(value1);
+	positionRotor2 = parseInt(value2);
+	positionRotor3 = parseInt(value3);
+}
+document.addEventListener("keydown", keyPressed)
+createLayoutHtml();
